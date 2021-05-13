@@ -9,7 +9,7 @@ class RectTool extends FabricTool {
   currentRect: fabric.Rect = new fabric.Rect()
   currentStartX: number = 0
   currentStartY: number = 0
-  minSize: number = this.strokeWidth
+  _minLength: number = 10
 
   configureCanvas({
     strokeWidth,
@@ -23,7 +23,7 @@ class RectTool extends FabricTool {
     this.strokeWidth = strokeWidth
     this.strokeColor = strokeColor
     this.fillColor = fillColor
-    this.minSize = strokeWidth
+    this._minLength = strokeWidth
 
     this._canvas.on("mouse:down", (e: any) => this.onMouseDown(e))
     this._canvas.on("mouse:move", (e: any) => this.onMouseMove(e))
@@ -73,13 +73,12 @@ class RectTool extends FabricTool {
     if (this.currentStartY > pointer.y) {
       this.currentRect.set({ top: Math.abs(pointer.y) })
     }
-    let minSize = this.minSize
     let _width = Math.abs(this.currentStartX - pointer.x);
     let _height = Math.abs(this.currentStartY - pointer.y);
-    if (_width <= minSize) { _width = minSize }
-    if (_height <= minSize) { _height = minSize }
-    this.currentRect.set({ width: _width })
-    this.currentRect.set({ height: _height })
+    this.currentRect.set({
+      width: Math.max(_width, this._minLength * 2),
+      height: Math.max(_height, this._minLength * 2),
+    })
     this.currentRect.setCoords()
     canvas.renderAll()
   }
